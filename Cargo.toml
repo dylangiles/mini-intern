@@ -1,0 +1,12 @@
+[package]
+name = "mini-intern"
+version = "0.0.1"
+edition = "2021"
+categories = ["interning", "strings"]
+description = "A small string interner for interning strings. The strings don't have to be small."
+repository = "https://github.com/dylangiles/mini-intern"
+authors = ["Dylan Giles <dylanygiles@gmail.com>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
