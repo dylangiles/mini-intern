@@ -1,6 +1,18 @@
 use std::{collections::HashMap, marker::PhantomData};
 
 /// A struct responsible for efficiently interning strings
+///
+/// # Examples
+/// ```
+/// use mini_intern::Interner;
+/// const TEST_CASE: &str = "test_case";
+/// let mut interner = <Interner<u32>>::with_capacity(64);
+/// _ = interner.intern("something");
+/// _ = interner.intern("something_else");
+/// _ = interner.intern("something_else_again");
+/// _ = interner.intern(TEST_CASE);
+/// assert_eq!(interner.intern(TEST_CASE), 3);
+/// ```
 // pub struct Interner<I, H = DefaultHasher> {
 // TODO: allow plugging in a custom hasher.
 pub struct Interner<I> {
