@@ -1,5 +1,3 @@
-mod fnv;
-
 use std::{collections::HashMap, marker::PhantomData};
 
 /// A struct responsible for efficiently interning strings
