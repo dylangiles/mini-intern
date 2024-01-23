@@ -15,7 +15,8 @@ use std::{collections::HashMap, marker::PhantomData};
 /// ```
 // pub struct Interner<I, H = DefaultHasher> {
 // TODO: allow plugging in a custom hasher.
-pub struct Interner<I> {
+#[derive(Debug)]
+pub struct Interner<I = u32> {
     map: HashMap<&'static str, u32>,
     vec: Vec<&'static str>,
     buf: String,
@@ -28,6 +29,14 @@ impl<I> Interner<I>
 where
     I: From<u32>,
 {
+    /// Creates am [`Interner`] with the specified capacity in memory. Useful for
+    /// pre-allocating space if the size of the items to be immediately interned is known.
+    ///
+    /// # Examples
+    /// ```
+    /// use mini_intern::Interner;
+    /// let interner: Interner = Interner::with_capacity(32);
+    /// ```
     pub fn with_capacity(cap: usize) -> Self {
         Interner {
             map: Default::default(),
@@ -39,6 +48,22 @@ where
         }
     }
 
+    /// Interns the given value. If the value already exists in the interner,
+    /// its ID is returned and no allocation is performed. If it does not exist,
+    /// the value is interned and a new ID is created for it.
+    ///
+    /// If the intern space is below the maximum capacity, no allocation occurs.
+    ///
+    /// # Examples
+    /// ```
+    /// use mini_intern::Interner;
+    /// let mut interner: Interner<u32> = Interner::with_capacity(32);
+    /// interner.intern("hello");
+    /// interner.intern("and");
+    /// interner.intern("good");
+    /// interner.intern("morning");
+    /// assert_eq!(interner.intern("good"), 2u32);
+    /// ```
     pub fn intern(&mut self, name: &str) -> I {
         match self.map.get(name) {
             Some(id) => (*id).into(),
@@ -46,10 +71,6 @@ where
                 let name = self.alloc(name);
                 let id = self.map.len() as u32;
                 self.map.insert(name, id);
-
-                #[cfg(test)]
-                println!("{:#?}", self.map);
-
                 self.vec.push(name);
 
                 id.into()
