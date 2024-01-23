@@ -29,7 +29,7 @@ impl<I> Interner<I>
 where
     I: From<u32>,
 {
-    /// Creates am [`Interner`] with the specified capacity in memory. Useful for
+    /// Creates an [`Interner`] with the specified capacity in memory. Useful for
     /// pre-allocating space if the size of the items to be immediately interned is known.
     ///
     /// # Examples
