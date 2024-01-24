@@ -1,4 +1,4 @@
-use std::{collections::HashMap, marker::PhantomData};
+use std::collections::HashMap;
 
 /// A struct responsible for efficiently interning strings
 ///
@@ -17,17 +17,15 @@ use std::{collections::HashMap, marker::PhantomData};
 // TODO: allow plugging in a custom hasher.
 #[derive(Debug)]
 pub struct Interner<I = u32> {
-    map: HashMap<&'static str, u32>,
+    map: HashMap<&'static str, I>,
     vec: Vec<&'static str>,
     buf: String,
     full: Vec<String>,
-    _phantom_i: PhantomData<I>,
-    // _phantom_h: PhantomData<H>,
 }
 
 impl<I> Interner<I>
 where
-    I: From<u32>,
+    I: From<u32> + Copy,
 {
     /// Creates am [`Interner`] with the specified capacity in memory. Useful for
     /// pre-allocating space if the size of the items to be immediately interned is known.
@@ -43,8 +41,6 @@ where
             vec: Vec::new(),
             buf: String::with_capacity(cap.next_power_of_two()),
             full: Vec::new(),
-            _phantom_i: PhantomData,
-            // _phantom_h: PhantomData,
         }
     }
 
@@ -70,7 +66,7 @@ where
             None => {
                 let name = self.alloc(name);
                 let id = self.map.len() as u32;
-                self.map.insert(name, id);
+                self.map.insert(name, id.into());
                 self.vec.push(name);
 
                 id.into()
