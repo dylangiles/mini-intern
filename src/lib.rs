@@ -26,6 +26,7 @@ pub struct Interner<I = u32> {
 impl<I> Interner<I>
 where
     I: From<u32> + Copy,
+    u32: From<I>,
 {
     /// Creates am [`Interner`] with the specified capacity in memory. Useful for
     /// pre-allocating space if the size of the items to be immediately interned is known.
@@ -90,6 +91,11 @@ where
 
         unsafe { &*(interned as *const str) }
     }
+
+    pub fn lookup(&self, id: I) -> &'static str {
+        let index: u32 = u32::from(id);
+        self.vec[index as usize]
+    }
 }
 #[cfg(test)]
 mod tests {
@@ -107,5 +113,16 @@ mod tests {
         _ = interner.intern(DUMMY_THREE);
         _ = interner.intern(TEST_CASE);
         assert_eq!(interner.intern(TEST_CASE), 3)
+    }
+
+    #[test]
+    fn lookup() {
+        use super::Interner;
+        let mut interner: Interner<u32> = Interner::with_capacity(32);
+        interner.intern("hello");
+        interner.intern("and");
+        interner.intern("good");
+        interner.intern("morning");
+        assert_eq!(interner.lookup(2), "good");
     }
 }
